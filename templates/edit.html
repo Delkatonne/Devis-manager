@@ -8,7 +8,7 @@
 <div style="flex:1"><label>Validité (jours)</label><input data-f="valid" value="{{ q.valid }}"></div>
 <div style="flex:1"><label>Devise</label><input data-f="cur" value="{{ q.cur }}"></div></div>
 <div class="scroll"><table><thead><tr><th>Désignation</th><th>Qté</th><th>Prix unitaire</th><th>Montant</th></tr></thead><tbody id="tb"></tbody></table></div>
-<div class="fait">Fait à............. Le .../.../20...</div>
+<div class="fait">Fait à.............................. Le .../.../20...</div>
 <div class="sign"><div>Signature<br><span>{{ co.admin }}</span></div></div></div>
 <script>window.Q={{ q|tojson }};window.SAVE="{{ url_for('save_quote', qid=q.id) }}";</script>
 <script src="{{ url_for('static', filename='edit.js') }}"></script>{% endblock %}
