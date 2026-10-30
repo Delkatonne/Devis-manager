@@ -1,21 +1,23 @@
-# Générateur de devis (Flask)
+# Générateur de devis (Flask + Postgres)
 
 ## Lancer en local
     python -m venv venv && source venv/bin/activate   # Windows : venv\Scripts\activate
     pip install -r requirements.txt
-    cp .env.example .env     # remplir SECRET_KEY (+ option e-mail)
+    cp .env.example .env     # remplir SECRET_KEY et DATABASE_URL
     python app.py            # http://127.0.0.1:5000
 Sans e-mail configuré, le lien « mot de passe oublié » s'affiche dans la console.
 
-## Déployer sur Railway
-1. Pousser le projet sur GitHub, puis Railway > New Project > Deploy from GitHub repo.
-2. Service > Settings > Volumes : ajouter un Volume monté sur `/data` (garde `devis.db` et les logos).
-3. Service > Variables : `SECRET_KEY`, `BREVO_API_KEY`, `MAIL_FROM` (voir ci-dessous).
-4. Service > Settings > Networking : Generate Domain.
-Le `Procfile` lance `gunicorn`. Railway fournit `PORT` et `RAILWAY_VOLUME_MOUNT_PATH` automatiquement.
+## Déployer sur Vercel (zéro configuration)
+1. Créer une base Postgres gratuite : Neon (neon.tech) ou Supabase, et copier la chaîne de connexion (`DATABASE_URL`).
+2. Pousser ce dossier sur GitHub.
+3. vercel.com/new > importer le dépôt (Flask est détecté automatiquement via `app.py`).
+4. Settings > Environment Variables : `SECRET_KEY`, `DATABASE_URL`, `BREVO_API_KEY`, `MAIL_FROM`.
+5. Deploy. Les tables sont créées automatiquement à la première requête.
 
-## E-mails sur Railway (important)
-Railway bloque le SMTP (Gmail inclus) sur les plans Free/Trial/Hobby : il faut une API HTTPS.
-Avec Brevo (offre gratuite) : créer un compte, ajouter et valider l'adresse expéditrice (Senders),
-créer une clé API (SMTP & API > API Keys), puis renseigner `BREVO_API_KEY` et `MAIL_FROM`.
-Le destinataire reste le Gmail saisi par l'entreprise à l'inscription.
+## E-mails (mot de passe oublié)
+Brevo (offre gratuite) : créer un compte, valider l'adresse expéditrice (Senders), créer une clé API
+(SMTP & API > API Keys). Le destinataire est le Gmail saisi par l'entreprise à l'inscription.
+
+## Notes
+- Fichiers statiques dans `public/static/`. Logos stockés en base (limite 2 Mo).
+- Vercel est sans état : rien n'est écrit sur disque, tout est dans Postgres.

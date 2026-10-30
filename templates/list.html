@@ -1,5 +1,5 @@
 {% extends "base.html" %}{% block b %}
-<div class="card row sp"><div class="row">{% if co.logo %}<img class="logo sm" src="{{ url_for('logo', f=co.logo) }}">{% endif %}
+<div class="card row sp"><div class="row">{% if co.has_logo %}<img class="logo sm" src="{{ url_for('logo', cid=co.id) }}">{% endif %}
 <div><h1>{{ co.name }}</h1><span class="mu">Admin : {{ co.admin }} · {{ co.email }}</span></div></div>
 <form method="post" action="{{ url_for('logout') }}"><button>Déconnexion</button></form></div>
 <div class="card"><div class="row sp"><h2>Mes devis</h2>

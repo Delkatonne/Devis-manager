@@ -1,7 +1,7 @@
 {% extends "base.html" %}{% block t %}{{ q.num }}{% endblock %}{% block b %}
 <div class="row sp no-print" style="margin-bottom:12px"><a class="btn" href="{{ url_for('list_quotes') }}">← Mes devis</a>
 <span class="mu" id="st"></span><button class="p" onclick="window.print()">Imprimer / PDF</button></div>
-<div class="sheet"><div class="hd"><div>{% if co.logo %}<img class="logo" src="{{ url_for('logo', f=co.logo) }}"><br>{% endif %}<b class="cn">{{ co.name }}</b></div>
+<div class="sheet"><div class="hd"><div>{% if co.has_logo %}<img class="logo" src="{{ url_for('logo', cid=co.id) }}"><br>{% endif %}<b class="cn">{{ co.name }}</b></div>
 <div><h2>DEVIS</h2><div class="r">N° {{ q.num }}</div></div></div>
 <div class="row f"><div style="flex:2"><label>Client</label><input data-f="client" value="{{ q.client }}"></div>
 <div style="flex:2"><label>Objet</label><input data-f="objet" value="{{ q.objet }}"></div>
