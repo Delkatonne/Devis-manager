@@ -1,0 +1,14 @@
+{% extends "base.html" %}{% block t %}{{ q.num }}{% endblock %}{% block b %}
+<div class="row sp no-print" style="margin-bottom:12px"><a class="btn" href="{{ url_for('list_quotes') }}">← Mes devis</a>
+<span class="mu" id="st"></span><button class="p" onclick="window.print()">Imprimer / PDF</button></div>
+<div class="sheet"><div class="hd"><div>{% if co.logo %}<img class="logo" src="{{ url_for('logo', f=co.logo) }}"><br>{% endif %}<b class="cn">{{ co.name }}</b></div>
+<div><h2>DEVIS</h2><div class="r">N° {{ q.num }}</div></div></div>
+<div class="row f"><div style="flex:2"><label>Client</label><input data-f="client" value="{{ q.client }}"></div>
+<div style="flex:2"><label>Objet</label><input data-f="objet" value="{{ q.objet }}"></div>
+<div style="flex:1"><label>Validité (jours)</label><input data-f="valid" value="{{ q.valid }}"></div>
+<div style="flex:1"><label>Devise</label><input data-f="cur" value="{{ q.cur }}"></div></div>
+<div class="scroll"><table><thead><tr><th>Désignation</th><th>Qté</th><th>Prix unitaire</th><th>Montant</th></tr></thead><tbody id="tb"></tbody></table></div>
+<div class="fait">Fait à............. Le .../.../20...</div>
+<div class="sign"><div>Signature<br><span>{{ co.admin }}</span></div></div></div>
+<script>window.Q={{ q|tojson }};window.SAVE="{{ url_for('save_quote', qid=q.id) }}";</script>
+<script src="{{ url_for('static', filename='edit.js') }}"></script>{% endblock %}

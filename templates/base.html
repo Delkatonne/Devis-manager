@@ -1,0 +1,5 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>{% block t %}Devis{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head><body><div class="wrap">
+{% for c, x in get_flashed_messages(with_categories=true) %}<div class="fl {{ c }} no-print">{{ x }}</div>{% endfor %}
+{% block b %}{% endblock %}</div></body></html>

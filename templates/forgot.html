@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% block b %}<div class="card narrow"><h1>Mot de passe oublié</h1>
+<p class="mu">Saisissez le Gmail de l'entreprise : un lien de réinitialisation y sera envoyé.</p>
+<form method="post"><label>E-mail</label><input type="email" name="email" required>
+<p><button class="p">Envoyer le lien</button></p></form>
+<p class="mu"><a href="{{ url_for('login') }}">Retour à la connexion</a></p></div>{% endblock %}

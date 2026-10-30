@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% block b %}<div class="card narrow"><h1>Connexion</h1>
+<form method="post"><label>E-mail (Gmail) de l'entreprise</label><input type="email" name="email" required>
+<label>Mot de passe</label><input type="password" name="password" required>
+<p><button class="p">Se connecter</button></p></form>
+<p class="mu"><a href="{{ url_for('forgot') }}">Mot de passe oublié ?</a> · <a href="{{ url_for('register') }}">Créer un compte</a></p></div>{% endblock %}

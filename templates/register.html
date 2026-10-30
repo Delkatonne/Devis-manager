@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% block b %}<div class="card narrow"><h1>Créer le compte de l'entreprise</h1>
+<form method="post" enctype="multipart/form-data">
+<label>Nom de l'entreprise</label><input name="name" required value="{{ request.form.name }}">
+<label>Nom de l'admin</label><input name="admin" required value="{{ request.form.admin }}">
+<label>Gmail de l'entreprise (sert à récupérer le mot de passe)</label><input type="email" name="email" placeholder="entreprise@gmail.com" required value="{{ request.form.email }}">
+<label>Mot de passe</label><input type="password" name="password" minlength="6" required>
+<label>Logo de l'entreprise</label><input type="file" name="logo" accept="image/*">
+<p><button class="p">Créer le compte</button></p></form>
+<p class="mu"><a href="{{ url_for('login') }}">Déjà un compte ? Connexion</a></p></div>{% endblock %}
