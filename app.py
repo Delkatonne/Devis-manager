@@ -1,19 +1,22 @@
-import os, json, sqlite3, smtplib, uuid
+import os, json, sqlite3, smtplib, uuid, urllib.request
 from email.message import EmailMessage
 from functools import wraps
 from dotenv import load_dotenv
 from flask import (Flask, g, render_template, request, redirect, url_for,
                    session, flash, abort, jsonify, send_from_directory)
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.middleware.proxy_fix import ProxyFix
 from itsdangerous import URLSafeTimedSerializer, BadSignature
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(BASE, ".env"))
 app = Flask(__name__)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 app.config.update(SECRET_KEY=os.getenv("SECRET_KEY", "change-me"),
                   MAX_CONTENT_LENGTH=3 * 1024 * 1024, SESSION_COOKIE_SAMESITE="Lax")
-DB = os.path.join(BASE, "devis.db")
-LOGOS = os.path.join(BASE, "uploads")
+DATA = os.getenv("DATA_DIR") or os.getenv("RAILWAY_VOLUME_MOUNT_PATH") or BASE  # volume persistant sur Railway
+DB = os.path.join(DATA, "devis.db")
+LOGOS = os.path.join(DATA, "uploads")
 os.makedirs(LOGOS, exist_ok=True)
 
 with sqlite3.connect(DB) as c:
@@ -55,17 +58,26 @@ def nb(v):
     except (TypeError, ValueError): return 0
 
 def send_reset(to, link):
+    subject = "Réinitialisation de votre mot de passe"
+    body = ("Bonjour,\n\nCliquez sur ce lien pour choisir un nouveau mot de passe "
+            f"(valable 1 heure, usage unique) :\n{link}\n\n"
+            "Si vous n'êtes pas à l'origine de cette demande, ignorez ce message.")
+    key, sender = os.getenv("BREVO_API_KEY"), os.getenv("MAIL_FROM")
     u, p = os.getenv("SMTP_USER"), os.getenv("SMTP_PASSWORD")
-    if not (u and p):
-        print("\n>>> LIEN DE RÉINITIALISATION (SMTP non configuré) :", link, "\n"); return
-    m = EmailMessage()
-    m["Subject"] = "Réinitialisation de votre mot de passe"; m["From"] = u; m["To"] = to
-    m.set_content("Bonjour,\n\nCliquez sur ce lien pour choisir un nouveau mot de passe "
-                  f"(valable 1 heure, usage unique) :\n{link}\n\n"
-                  "Si vous n'êtes pas à l'origine de cette demande, ignorez ce message.")
     try:
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=20) as s:
-            s.login(u, p); s.send_message(m)
+        if key and sender:  # API HTTPS : fonctionne sur Railway (le SMTP y est bloqué hors plan Pro)
+            req = urllib.request.Request(
+                "https://api.brevo.com/v3/smtp/email",
+                data=json.dumps({"sender": {"name": "Devis", "email": sender}, "to": [{"email": to}],
+                                 "subject": subject, "textContent": body}).encode(),
+                headers={"api-key": key, "content-type": "application/json", "accept": "application/json"})
+            urllib.request.urlopen(req, timeout=20).read()
+        elif u and p:  # SMTP Gmail (en local ou hébergeur qui autorise le SMTP)
+            m = EmailMessage(); m["Subject"] = subject; m["From"] = u; m["To"] = to; m.set_content(body)
+            with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=20) as sm:
+                sm.login(u, p); sm.send_message(m)
+        else:
+            print("\n>>> LIEN DE RÉINITIALISATION (e-mail non configuré) :", link, "\n")
     except Exception as e:
         print("Erreur d'envoi e-mail :", e)
 
